@@ -4,7 +4,7 @@
 ## Table of contents
 * [General info](#general-info)
 * [Screenshot](#screenshot)
-* [Main Technologies](#main technologies)
+* [Main Technologies](#main-technologies)
 * [Setup](#setup)
 * [Contact](#contact)
 
