@@ -1,10 +1,8 @@
 // text analyzer
 'use strict';
 const Joi = require('joi');
-const { fromUrl } = require('textract');
-const { promisify } = require('util');
-const { jsPDF } = require('jspdf');
-require('jspdf-autotable');
+const { textExtractor, wordsExtractor } = require('../../libs/text');
+const { generatePdf } = require('../../libs/pdf');
 
 const handler = async (request, h) => {
   const { urls } = request.payload;
@@ -20,25 +18,10 @@ const handler = async (request, h) => {
 
     try {
       // get text from the html
-      const text = await promisify(fromUrl)(url);
+      const text = await textExtractor(url);
 
       // get most popular words that are longer than 4 letters
-      const words = text
-        .match(/\w+/g)
-        .filter((word) => word.length > wordLength)
-        .reduce((accumulator, word) => {
-          const alreadyExist = accumulator.find(
-            (element) => element.word === word
-          );
-          if (alreadyExist) {
-            alreadyExist.count++;
-          } else {
-            accumulator.push({ word, count: 1 });
-          }
-
-          return accumulator;
-        }, [])
-        .sort((a, b) => b.count - a.count);
+      const words = wordsExtractor({ text, wordLength });
 
       const result = [];
       for (let index = 0; index < neededWords; index++) {
@@ -52,25 +35,11 @@ const handler = async (request, h) => {
     }
   }
 
-  // generating pdf
-  const doc = new jsPDF();
-
-  const columnsNames = [];
-  for (let columnName = 1; columnName <= neededWords; columnName++) {
-    columnsNames.push(columnName.toString());
-  }
-
-  doc.autoTable({
-    head: [['Web Address', ...columnsNames]],
-    body,
-  });
-
-  // saving pdf
-  const filename = 'test.pdf';
-  doc.save(filename);
+  // // generating pdf
+  const pdf = generatePdf({ body, neededWords });
 
   // sending pdf
-  return h.file(`./${filename}`, {
+  return h.file(`./${pdf}`, {
     mode: 'attachment',
     type: 'application/pdf',
   });
