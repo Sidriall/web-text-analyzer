@@ -17,7 +17,6 @@ const init = async () => {
   server.ext({
     type: 'onRequest',
     method: async function (request, h) {
-      // request.server.config = Object.assign({}, config); // some config
       request.server.logger = logger;
       return h.continue;
     },

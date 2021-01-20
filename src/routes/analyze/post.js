@@ -35,7 +35,7 @@ const handler = async (request, h) => {
     }
   }
 
-  // // generating pdf
+  // generating pdf
   const pdf = generatePdf({ body, neededWords });
 
   // sending pdf
@@ -60,7 +60,6 @@ module.exports = {
           .items(
             Joi.string().pattern(
               /^(https?:\/\/)?([\w\.]+)\.([a-z]{2,6}\.?)(\/[\w\.]*)*\/?$/ // url pattern
-              // /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/ // other url pattern
             )
           )
           .min(1)
